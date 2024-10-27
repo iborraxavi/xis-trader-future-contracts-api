@@ -1,0 +1,151 @@
+openapi: 3.0.3
+info:
+  title: XIS Trader future contracts API
+  description: |-
+    This is an XIS Trader future contracts API specification
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: xavi.iborra.95@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://localhost:8080/xis-trader
+tags:
+  - name: future-contracts
+    description: Future contracts
+
+paths:
+  /future-contracts:
+    get:
+      tags:
+        - future-contracts
+      summary: Future contracts
+      description: Future contracts
+      operationId: futureContracts
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FutureContractsListResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /future-contracts/{id}:
+    get:
+      tags:
+        - future-contracts
+      summary: Future contracts by id
+      description: Future contracts by id
+      operationId: futureContractsById
+      parameters:
+        - $ref: '#/components/parameters/FutureContractsId'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FutureContractsResponse'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+components:
+
+  parameters:
+    FutureContractsId:
+      name: id
+      in: path
+      description: Future contracts id
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: b0b2c740-8ce2-4cf7-991c-be9abe63b62c
+
+  schemas:
+    FutureContractsListResponse:
+      type: object
+      properties:
+        futureContracts:
+          type: array
+          items:
+            $ref: "#/components/schemas/FutureContractsResponse"
+    FutureContractsResponse:
+      type: object
+      properties:
+        id:
+          description: Future contracts id
+          type: string
+          format: uuid
+          example: b0b2c740-8ce2-4cf7-991c-be9abe63b62c
+        tickPrice:
+          description: Tick price
+          type: number
+          format: double
+          example: 0.25
+        pointPrice:
+          description: Point price
+          type: number
+          format: double
+          example: 0.50
+        pointTicks:
+          description: Number of ticks of point
+          type: integer
+          format: int32
+          example: 10
+      required:
+        - id
+        - tickPrice
+        - pointPrice
+        - pointTicks
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: 400
+        message:
+          type: string
+          example: Bad request error
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConstraintViolation'
+    ConstraintViolation:
+      type: object
+      properties:
+        field:
+          type: string
+          example: search.searchId
+        message:
+          type: string
+          example: Field is required
